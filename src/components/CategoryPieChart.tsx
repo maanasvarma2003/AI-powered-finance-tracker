@@ -19,7 +19,7 @@ const CustomTooltip = ({ active, payload }: any) => {
           {payload[0].name}
         </p>
         <p className="text-xs text-muted-foreground">
-          ${payload[0].value.toLocaleString()}
+          ₹{payload[0].value.toLocaleString('en-IN')}
         </p>
       </div>
     );
