@@ -16,24 +16,22 @@ import { toast } from 'sonner';
 export default function Dashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
-  const [session, setSession] = useState<any>(null);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
       
       if (!session) {
         navigate('/auth');
       }
-    });
+    };
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       
       if (!session) {
@@ -75,7 +73,6 @@ export default function Dashboard() {
     }
   };
 
-  // Calculate stats from real data
   const income = transactions
     .filter(t => t.category === 'income')
     .reduce((sum, t) => sum + Number(t.amount), 0);
